@@ -103,7 +103,7 @@ class Hex_Mem_Stack_Calculator:
             except ValueError:
                 print("Error: Please enter valid numeric values.")
 
-    def ascii_dump(self):
+    def ascii_dump(self, base_address: int = 0x1000):
         """Array addressing using offsets (base + index × element size)"""
         user_input = input("Enter a string (maximum 10 characters): ")
     
