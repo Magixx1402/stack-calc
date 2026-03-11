@@ -105,7 +105,21 @@ class Hex_Mem_Stack_Calculator:
 
     def ascii_dump(self):
         """Array addressing using offsets (base + index × element size)"""
-        pass
+        user_input = input("Enter a string (maximum 10 characters): ")
+    
+        # 1. Logic: Constrain string length to 10 characters
+        truncated_string = user_input[:10]
+    
+        # 2. Logic: Convert to ASCII values and append null terminator (0x00)
+        byte_values = [ord(char) for char in truncated_string] + [0x00]
+    
+        # 3. UI: Format and print each byte with its memory address
+        for i, val in enumerate(byte_values):
+            current_address = base_address + i
+            print(f"0x{current_address:04x} : 0x{val:02X}")
+    
+        # 4. UI: Print the length excluding the null terminator
+        print(f"LENGTH (until 0x00) = {len(truncated_string)}")
     
     def array_addressing(self):
         """To be implemented"""
