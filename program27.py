@@ -122,8 +122,56 @@ class Hex_Mem_Stack_Calculator:
         print(f"LENGTH (until 0x00) = {len(truncated_string)}")
     
     def array_addressing(self):
-        """To be implemented"""
-        pass
+        memory = {}
+
+        print("--- Memory Access Simulator ---")
+        print("Type 'exit' as the mode to quit.\n")
+    
+        while True:
+            try:
+                # This Gets the  Inputs
+                base_input = input("\nEnter base address (e.g., 0x3000): ").strip().lower()
+                if base_input == 'exit': break
+                base = int(base_input, 16) if base_input.startswith('0x') else int(base_input)
+            
+                index = int(input("Enter index (i): "))
+                size = int(input("Enter size (1 or 2): "))
+                mode = input("Enter mode (read/write): ").strip().lower()
+
+                # 2. This Calculate ADDRESS
+                address = base + (index * size)
+                print(f"ADDRESS = base + index*size = {hex(address)}")
+
+                # This Performs the Operation
+                if mode == "write":
+                    value = int(input("Enter value to write: "))
+                    if size == 1:
+                        memory[address] = value & 0xFF
+                    else:
+                        # Little-Endian: Low byte first
+                        memory[address] = value & 0xFF
+                        memory[address + 1] = (value >> 8) & 0xFF
+                
+                    print(f"WRITE size={size} value={value} to ADDRESS {hex(address)}")
+
+                elif mode == "read":
+                    if size == 1:
+                        val = memory.get(address, 0)
+                    else:
+                        #Little-Endian which Combine Low and High bytes
+                        low = memory.get(address, 0)
+                        high = memory.get(address + 1, 0)
+                        val = low | (high << 8)
+                
+                    print(f"READ size={size} from ADDRESS {hex(address)} = {val}")
+            
+                elif mode == "exit":
+                    break
+                else:
+                    print("Invalid mode.")
+
+            except ValueError:
+                print("Error: Please enter valid numbers (or 0x hex).")
   
     def stack_frame(self):
         """Simplified bp offsets and register-style simulation"""
