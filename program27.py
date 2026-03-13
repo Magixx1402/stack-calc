@@ -2,13 +2,11 @@ class Hex_Mem_Stack_Calculator:
     """ A class developed according to the system requirements"""
     def __init__(self):
         pass
-
+            
     def dec_hex_bin(self):
-        """ Converts a decimal number to 16-bit binary, 
-        and its signed interpretation"""
-        
+        """ Converts a decimal number to 16-bit binary, and its signed interpretation"""
+         
         print("===== Decimal Converter ===== ")
-        
         while True:
             num = input("Enter a decimal number or 'back' to return to main menu:- ")
             
@@ -17,22 +15,22 @@ class Hex_Mem_Stack_Calculator:
                 break
             
             try:
-                n = int(num)
+                number = int(num)
                 
                 # Check if number provided is less than 0 (necessary for negative number conversion)
-                if n < 0:
+                if number < 0:
                     # Add 65536 to get the unsigned equivalent
-                    unsigned_n = n + 65536 # Unsigned integer representing non-negative numbers
+                    unsigned_number = number + 65536 # Unsigned integer representing non-negative numbers
                 else:
-                    unsigned_n = n
+                    un= number
 
-                hexadecimal_value = format(unsigned_n, 'X') # Convert to hexadecimal with hex function
-                binary_value = format(unsigned_n, '016b') # Convert to binary with leading zeros
+                hexadecimal_value = format(unsigned_number, 'X') # Convert to hexadecimal with hex function
+                binary_value = format(unsigned_number, '016b') # Convert to binary with leading zeros
                 
-                if unsigned_n < 32768:
-                    signed_value = unsigned_n
+                if unsigned_number < 32768:
+                    signed_value = unsigned_number
                 else:
-                    signed_value = unsigned_n - 65536
+                    signed_value = unsigned_number - 65536
         
                 print(f"HEX = <{hexadecimal_value}>")
                 print(f"BIN(16) = <{binary_value}>")
@@ -41,7 +39,7 @@ class Hex_Mem_Stack_Calculator:
             # If input is a string
             except ValueError:
                 print("Error: Please enter a valid integer (numbers only, no letters or symbols)")
-      
+            
     def little_endian(self):
         """Little-endian pack/unpack (16-bit) with memory write/read"""
 
@@ -58,9 +56,9 @@ class Hex_Mem_Stack_Calculator:
                 break
 
             try:
-                n = int(num_input)
+                number = int(num_input)
 
-                if n < 0 or n > 65535:
+                if number < 0 or number > 65535:
                     print("Error: n must be between 0 and 65535.")
                     continue
 
@@ -68,21 +66,21 @@ class Hex_Mem_Stack_Calculator:
 
                 # Accept decimal or hex
                 if addr_input.lower().startswith("0x"):
-                    addr = int(addr_input, 16)
+                    address = int(addr_input, 16)
                 else:
-                    addr = int(addr_input)
+                    address = int(addr_input)
 
                 # Extract bytes
-                low_byte = n & 0xFF
-                high_byte = (n >> 8) & 0xFF
+                low_byte = number & 0xFF
+                high_byte = (number>> 8) & 0xFF
 
                 # Pack into memory (little-endian)
-                memory[addr] = low_byte
-                memory[addr + 1] = high_byte
+                memory[address] = low_byte
+                memory[address + 1] = high_byte
 
                 # Read back
-                read_low = memory[addr]
-                read_high = memory[addr + 1]
+                read_low = memory[address]
+                read_high = memory[address + 1]
 
                 # Unpack
                 unpacked = read_low + (read_high << 8)
@@ -93,88 +91,115 @@ class Hex_Mem_Stack_Calculator:
                 print(f"UNPACKED = <{unpacked}>")
 
                 # Memory write evidence
-                print(f"MEM[0x{addr:04X}] = 0x{low_byte:02X}")
-                print(f"MEM[0x{addr+1:04X}] = 0x{high_byte:02X}")
+                print(f"MEM[0x{address:04X}] = 0x{low_byte:02X}")
+                print(f"MEM[0x{address+1:04X}] = 0x{high_byte:02X}")
 
                 # Memory read evidence
-                print(f"READ MEM[0x{addr:04X}] = 0x{read_low:02X}")
-                print(f"READ MEM[0x{addr+1:04X}] = 0x{read_high:02X}")
+                print(f"READ MEM[0x{address:04X}] = 0x{read_low:02X}")
+                print(f"READ MEM[0x{address+1:04X}] = 0x{read_high:02X}")
 
             except ValueError:
                 print("Error: Please enter valid numeric values.")
-
-    def ascii_dump(self, base_address: int = 0x1000):
-        """Array addressing using offsets (base + index × element size)"""
-        user_input = input("Enter a string (maximum 10 characters): ")
-    
-        # 1. Logic: Constrain string length to 10 characters
-        truncated_string = user_input[:10]
-    
-        # 2. Logic: Convert to ASCII values and append null terminator (0x00)
-        byte_values = [ord(char) for char in truncated_string] + [0x00]
-    
-        # 3. UI: Format and print each byte with its memory address
-        for i, val in enumerate(byte_values):
-            current_address = base_address + i
-            print(f"0x{current_address:04x} : 0x{val:02X}")
-    
-        # 4. UI: Print the length excluding the null terminator
-        print(f"LENGTH (until 0x00) = {len(truncated_string)}")
-    
-    def array_addressing(self):
-        memory = {}
-
-        print("--- Memory Access Simulator ---")
-        print("Type 'exit' as the mode to quit.\n")
-    
+     
+    def ascii_dump(self) -> list[tuple[int, int]]:
+        """Transforms a string into a list of (address, byte_value) tuples."""
+        
+        print("===== ASCII Memory Dump =====")
+        
         while True:
-            try:
-                # This Gets the  Inputs
-                base_input = input("\nEnter base address (e.g., 0x3000): ").strip().lower()
-                if base_input == 'exit': break
-                base = int(base_input, 16) if base_input.startswith('0x') else int(base_input)
+            s = input("Enter a string (maximum 10 characters): ")
             
-                index = int(input("Enter index (i): "))
-                size = int(input("Enter size (1 or 2): "))
-                mode = input("Enter mode (read/write): ").strip().lower()
+            if s.lower() == 'back':
+                print("Returning to main menu...")
+                return []
+            
+            break
+        
+        # Ensure max 10 chars as per Image 5
+        s = s[:10] 
+        
+        base_address = 0x1000
+        
+        # Convert characters to ASCII and add the null terminator
+        byte_values = [ord(char) for char in s] + [0x00]
 
-                # 2. This Calculate ADDRESS
-                address = base + (index * size)
-                print(f"ADDRESS = base + index*size = {hex(address)}")
-
-                # This Performs the Operation
-                if mode == "write":
-                    value = int(input("Enter value to write: "))
-                    if size == 1:
-                        memory[address] = value & 0xFF
-                    else:
-                        # Little-Endian: Low byte first
-                        memory[address] = value & 0xFF
-                        memory[address + 1] = (value >> 8) & 0xFF
+        dump = []
+        # Map each byte to its specific memory address
+        # Format the output exactly as shown in Image 5: 0x1000 : 0xHH
+        for i, val in enumerate(byte_values):
+            address = base_address + i
+            dump.append((address, val))
+            print(f"0x{address:04x} : 0x{val:02X}")
+            
+        # Print length (excluding the null terminator as per standard length scans)
+        # Using the length of the string before we added the 0x00
+        print(f"LENGTH (until 0x00) = {len(s)}")
+        
+        return dump
+        
+    def array_addressing(self):
+        """Array addressing using offsets (base + index × element size)"""
+        
+        memory = {} # Dictionary to store simulated memory maps address
+        
+        while True:
+            proceed = input("Do you wish to proceed with the program:- ")
+            
+            if proceed.lower() == 'back':
+                print("")
+                break
+            
+            try:
+                # Inputs 
+                base = int(input("Enter base addres:- "), 0) # Enter the address
+                index = int(input("Enter index i:- ")) # Enter the index
+                size = int(input("Enter size (1 or 2):- ")) # Element size in bytes: 1 or 2
+                mode = str(input("Enter mode (read or write):- ")).lower() # Enter a mode either read or write
                 
-                    print(f"WRITE size={size} value={value} to ADDRESS {hex(address)}")
+                value = None
+                if mode == "write":
+                    value = int(input("Enter value:- "))
+            
+                address = base + index * size
+                print(f"ADDRESS = base + index*size = {hex(address)}")
+                
+                if mode == "write":
+                    if size == 1:
+                        # Store one byte (mask to 0 - 255)
+                        memory[address] = value & 0xFF
+                    elif size == 2:
+                        # Store two bytes in little-endian order
+                        memory[address] = value & 0xFF
+                        memory[address + 1] = (value >> 8) & 0xFF  # high byte
+                    else:
+                        print("Error: size must be 1 or 2")
+                        return
 
+                    print(f"WRITE size={size} value={value} to ADDRESS {hex(address)}")   
+                                
                 elif mode == "read":
                     if size == 1:
-                        val = memory.get(address, 0)
+                        # Read one byte (default to 0 if never written)
+                        val = memory.get(address, 0) & 0xFF
+                    elif size == 2:
+                        # Read two bytes in little‑endian order
+                        low = memory.get(address, 0) & 0xFF
+                        high = memory.get(address + 1, 0) & 0xFF
+                        val = (high << 8) | low
                     else:
-                        #Little-Endian which Combine Low and High bytes
-                        low = memory.get(address, 0)
-                        high = memory.get(address + 1, 0)
-                        val = low | (high << 8)
-                
-                    print(f"READ size={size} from ADDRESS {hex(address)} = {val}")
-            
-                elif mode == "exit":
-                    break
-                else:
-                    print("Invalid mode.")
+                        print("Error: size must be 1 or 2")
+                        return
 
+                    print(f"READ size={size} from ADDRESS {hex(address)} = {val}")
+
+                else:
+                    print("Error: mode must be 'read' or 'write'")
+                    
             except ValueError:
-                print("Error: Please enter valid numbers (or 0x hex).")
-  
+                print("Error: Please enter a valid number")    
+    
     def stack_frame(self):
-        """Simplified bp offsets and register-style simulation"""
+        """"""
         print("\n===== Stack Frame (bp offsets) =====")
         
         while True:
@@ -208,9 +233,10 @@ class Hex_Mem_Stack_Calculator:
                 print(f"AX (AX+BX) = {a + b}")
                 print("-" * 20 + "\n")
 
+
             except ValueError:
                 print("Error: Please enter valid integers (e.g., 10 20).")
-  
+                
 def main():
     """ An interactive menu for the program """
     calculator = Hex_Mem_Stack_Calculator()
@@ -247,6 +273,6 @@ def main():
                     actions[choice]()  # Call the method (no calculator argument needed)
             else:
                 print("Invalid choice. Please enter a number between 0-5.")
-
+                
 if __name__ == "__main__":
     main()
