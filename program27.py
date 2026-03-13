@@ -22,7 +22,7 @@ class Hex_Mem_Stack_Calculator:
                     # Add 65536 to get the unsigned equivalent
                     unsigned_number = number + 65536 # Unsigned integer representing non-negative numbers
                 else:
-                    un= number
+                    unsigned_number = number
 
                 hexadecimal_value = format(unsigned_number, 'X') # Convert to hexadecimal with hex function
                 binary_value = format(unsigned_number, '016b') # Convert to binary with leading zeros
