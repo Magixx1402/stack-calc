@@ -112,5 +112,94 @@ class TestHexMemStackCalculator(unittest.TestCase):
             self.assertIn("bp+4   : b = 20", output)
             self.assertIn("AX (AX+BX) = 30", output)
 
+
+
+# ver 2 remove later
+
+# Test for option 3 - testing for empty sets
+        # Store values in correct memory address
+
+    @patch('builtins.input', retrun_value="")
+    def test_null_value_stored(self,mocked_input):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.calc.ascii_dump(base_address=0x1000)
+            result = fake_out.getvalue()
+            self.assertIn("leght (until 0x00) = 0", result)
+            
+
+# #Test for option 3 - testing for empty sets
+#         # Store values in correct memory address
+
+#     @patch('builtins.input', retrun_value="short")
+#     def test_short_string(self,mocked_input):
+#         with patch('sys.stdout', new=StringIO()) as fake_out:
+#             self.calc.ascii_dump(base_address=0x1000)
+            
+            
+#             result = fake_out.getvalue()
+#             self.assertIn("total length = 0", result)        
+    
+# #Test for option 3 - short string
+# test for short stings 
+    @patch('builtins.input', retrun_value="test")
+    def test_short_string(self,mocked_input):
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+    
+            self.calc.ascii_dump(base_address=0x1000)
+            output = fake_out.getvalue() # changed back to output
+
+            # store the data in memory location x and then check if its counted
+            self.assertIn("0x1000 : 0x74", output) # letter t
+            self.assertIn("0x1001 : 0x65", output) # letter e
+            self.assertIn("0x1002 : 0x73", output) # # letter s
+            self.assertIn("0x1003 : 0x74", output) # letter t
+            #self.assertIn("total length of 0x00 = 4", output) # null 
+            self.assertIn("0x1004 : 0x00", output)
+            self.assertIn("LENGTH (until 0x00) = 4", output)
+
+# Test for option 4 - 
+
+# test for the read  - use side_efect: not good for big lists 
+# subtest approach- might be changed
+
+    @patch('builtins.input', retrun_value="test")
+    def test_array_write_addresses(self, mocked_input):
+        """ Tests Option 4 read mode: address calculation and value return."""
+        # placed into a "container"  
+        mocked_input.side_effect = ["0x3000", "2", "1", "Write", "01", "exit"]
+
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.calc.array_addressing()
+            output = fake_out.getvalue()
+
+
+        with self.subTest("check addressing"):
+            #self.assertEqual("0x3000", output)
+            self.assertIn("Address is stored in 0x3000", output)
+
+            
+        with self.subTest("check correct value returned"):
+            self.assertIn("Read from value stored at 0x3001", output)    
+            
+# option 4: test read 
+
+    @patch('builtins.input', retrun_value="test")
+    def test_array_read_mode(self, mocked_input): 
+        # add an exit 
+        
+        """Tests Option 4 write then read-back in the same session."""
+        mocked_input.side_effect = ["0x3000", "3", "2", "Read", "exit"] # same as read version
+        
+        with patch('sys.stdout', new=StringIO()) as fake_out:
+            self.calc.array_addressing()
+            output = fake_out.getvalue()
+            
+        with self.subTest("check addressing"):
+            #self.assertIn("0x300C", output)
+            self.assertIn("Address is stored in 0x300C", output)
+        
+        with self.subTest("check read value returned"):
+            self.assertIn("Read from value stored at 0x3000.", output)
+
 if __name__ == '__main__':
     unittest.main()
